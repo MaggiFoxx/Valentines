@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>💘 Frage an dich</title>
+  <title>💘 Frage an meine Sexy Frau </title>
   <style>
     :root{
       --bg1:#ffdde1; --bg2:#ee9ca7; --card:#ffffffcc; --text:#1f1f1f;
@@ -47,7 +47,7 @@
       justify-content:center;
       flex-wrap:wrap;
       position:relative;
-      min-height:70px;
+      min-height:80px;
     }
     button{
       border:0;
@@ -102,15 +102,12 @@
 </head>
 
 <body>
-  <!-- Hintergrundherzen -->
   <div id="hearts"></div>
 
   <main class="card" id="card">
-    <img class="gif" id="gif"
-      src="https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif"
-      alt="cute gif" />
-    <h1 id="title">Willst du mein Valentine sein? 💘</h1>
-    <p id="subtitle">Du hast exakt zwei Optionen. Eine davon ist richtig.</p>
+    <img class="gif" id="gif" src="" alt="gif" />
+    <h1 id="title">Hey Sexy willst mein Valentinstags Date sein? 💘</h1>
+    <p id="subtitle">Es gibt nur 2 Möglichkeiten. UND NUR EINE IST RICHTIG.</p>
 
     <div class="btnRow" id="btnRow">
       <button id="yesBtn">Ja 💚</button>
@@ -118,22 +115,21 @@
     </div>
 
     <div id="result" class="hidden">
-      <div class="ok">Ok yay!!! 🥳💖</div>
-      <p>Ich wusste es.</p>
+      <div class="ok">YIPPI !!! 🥳💖</div>
+      <p>DANKE MEINE GÖTTIN.</p>
     </div>
   </main>
 
-  <!-- Confetti lib -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <script>
     // ====== QUICK CUSTOMIZE ======
-    const QUESTION = "Willst du mein Valentine sein? 💘";
-    const SUBTITLE = "Du hast exakt zwei Optionen. Eine davon ist richtig.";
-    const YES_TEXT = "Ja 💚";
+    const QUESTION = "Hey Sexy willst mein Valentinstags Date sein? 💘";
+    const SUBTITLE = "Es gibt nur 2 Möglichkeiten. UND NUR EINE IST RICHTIG.";
+    const YES_TEXT = "Natürlemonte 💚";
 
     const noPhrases = [
-      "Nein 💔",
+      "Was zum Teifel, Nein 💔",
       "Bist du sicher?",
       "Wirklich sicher?",
       "Denk nochmal nach…",
@@ -146,17 +142,16 @@
       "Dein Ernst?",
       "Ich wachse jetzt. Deal with it.",
       "😐",
-      "Ok, jetzt reicht’s.",
+      "Ok, jetzt reicht’s."
     ];
 
+    // ✅ NEUE GIFS
     const gifs = {
-      start: "https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif",
+      start: "https://media1.tenor.com/m/8dQ61c8Hi5cAAAAd/mind-blown-mind-blowing.gif",
       no: [
-        "https://media.tenor.com/1o5qkXJ0lG8AAAAi/bear-cry.gif",
-        "https://media.tenor.com/9q7i0lF6h7AAAAAi/crying-bear.gif",
-        "https://media.tenor.com/3u1qv4mN3n8AAAAi/sad-bear.gif"
+        "https://media.tenor.com/820Xy2xnC0YAAAAM/hihi-laugh.gif"
       ],
-      yes: "https://media.tenor.com/8JYt1WZ9n4gAAAAi/love-bear.gif"
+      yes: "https://media1.tenor.com/m/8dQ61c8Hi5cAAAAd/mind-blown-mind-blowing.gif"
     };
     // ============================
 
@@ -172,10 +167,11 @@
     subtitleEl.textContent = SUBTITLE;
     yesBtn.textContent = YES_TEXT;
 
+    gifEl.src = gifs.start;
+
     let noCount = 0;
 
     function setYesSize() {
-      // wächst spürbar, aber nicht komplett absurd
       const base = 1;
       const scale = base + Math.min(noCount * 0.15, 2.2);
       yesBtn.style.transform = `scale(${scale})`;
@@ -183,7 +179,6 @@
     }
 
     function maybeMoveNoButton() {
-      // ab ein paar Klicks fängt "Nein" an zu flüchten (klassischer Reel-Effekt)
       if (noCount < 4) return;
 
       const card = document.getElementById("card");
@@ -197,7 +192,6 @@
       const x = padding + Math.random() * Math.max(0, maxX - padding);
       const y = padding + Math.random() * Math.max(0, maxY - padding);
 
-      // absolut innerhalb der Card positionieren
       noBtn.style.position = "absolute";
       noBtn.style.left = `${x}px`;
       noBtn.style.top  = `${y}px`;
@@ -208,11 +202,8 @@
       noBtn.textContent = noPhrases[Math.min(noCount, noPhrases.length - 1)];
       setYesSize();
 
-      // GIF wechselt gelegentlich
-      if (noCount % 2 === 0) {
-        const pick = gifs.no[(noCount / 2) % gifs.no.length];
-        gifEl.src = pick;
-      }
+      // beim Nein-Klick: HIHi GIF
+      gifEl.src = gifs.no[noCount % gifs.no.length];
 
       maybeMoveNoButton();
     });
@@ -222,15 +213,14 @@
       btnRow.classList.add("hidden");
       result.classList.remove("hidden");
 
-      // Konfetti/Herzen
       const duration = 900;
       const end = Date.now() + duration;
 
       (function frame() {
         confetti({
-          particleCount: 6,
-          spread: 80,
-          startVelocity: 38,
+          particleCount: 7,
+          spread: 85,
+          startVelocity: 40,
           scalar: 1.0,
           origin: { x: Math.random(), y: 0.15 }
         });
@@ -238,7 +228,7 @@
       })();
     });
 
-    // Hintergrundherzen generieren
+    // Hintergrundherzen
     const hearts = document.getElementById("hearts");
     const count = 18;
     for (let i = 0; i < count; i++) {
