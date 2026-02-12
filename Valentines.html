@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>💘 Frage an dich</title>
+  <style>
+    :root{
+      --bg1:#ffdde1; --bg2:#ee9ca7; --card:#ffffffcc; --text:#1f1f1f;
+      --yes:#22c55e; --yes2:#16a34a; --no:#ef4444; --no2:#dc2626;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 20% 10%, #fff 0%, transparent 55%),
+                  radial-gradient(900px 700px at 90% 20%, #fff 0%, transparent 45%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+    }
+    .card{
+      width:min(680px, 92vw);
+      background:var(--card);
+      backdrop-filter: blur(10px);
+      border:1px solid #ffffff80;
+      border-radius:24px;
+      padding:28px 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.15);
+      text-align:center;
+      position:relative;
+    }
+    h1{margin:14px 0 8px; font-size: clamp(26px, 4vw, 40px); line-height:1.1}
+    p{margin:0 0 18px; opacity:.85}
+    .gif{
+      width:min(260px, 70vw);
+      height:auto;
+      border-radius:18px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.15);
+      user-select:none;
+      -webkit-user-drag:none;
+    }
+    .btnRow{
+      margin-top: 14px;
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+      position:relative;
+      min-height:70px;
+    }
+    button{
+      border:0;
+      border-radius:14px;
+      padding:12px 18px;
+      font-weight:700;
+      cursor:pointer;
+      transition: transform .12s ease, filter .12s ease;
+      box-shadow: 0 10px 26px rgba(0,0,0,.12);
+      user-select:none;
+    }
+    button:active{transform: translateY(1px) scale(.99)}
+    #yesBtn{
+      background: linear-gradient(180deg, var(--yes), var(--yes2));
+      color:#fff;
+      font-size: 18px;
+      transform-origin:center;
+    }
+    #noBtn{
+      background: linear-gradient(180deg, var(--no), var(--no2));
+      color:#fff;
+      position:relative;
+    }
+
+    /* kleine floating-hearts im Hintergrund */
+    .heart{
+      position:absolute;
+      width:18px; height:18px;
+      transform: rotate(45deg);
+      opacity:.18;
+      background:#fff;
+      top:110%;
+      animation: floatUp linear infinite;
+    }
+    .heart:before,.heart:after{
+      content:"";
+      position:absolute;
+      width:18px;height:18px;
+      background:#fff;
+      border-radius:50%;
+      left:-9px; top:0;
+    }
+    .heart:after{left:0; top:-9px}
+    @keyframes floatUp{
+      from{transform:translateY(0) rotate(45deg)}
+      to{transform:translateY(-140vh) rotate(45deg)}
+    }
+
+    .hidden{display:none !important}
+    .ok{font-size: clamp(26px, 4vw, 44px); font-weight:900; margin:14px 0 0}
+  </style>
+</head>
+
+<body>
+  <!-- Hintergrundherzen -->
+  <div id="hearts"></div>
+
+  <main class="card" id="card">
+    <img class="gif" id="gif"
+      src="https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif"
+      alt="cute gif" />
+    <h1 id="title">Willst du mein Valentine sein? 💘</h1>
+    <p id="subtitle">Du hast exakt zwei Optionen. Eine davon ist richtig.</p>
+
+    <div class="btnRow" id="btnRow">
+      <button id="yesBtn">Ja 💚</button>
+      <button id="noBtn">Nein 💔</button>
+    </div>
+
+    <div id="result" class="hidden">
+      <div class="ok">Ok yay!!! 🥳💖</div>
+      <p>Ich wusste es.</p>
+    </div>
+  </main>
+
+  <!-- Confetti lib -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <script>
+    // ====== QUICK CUSTOMIZE ======
+    const QUESTION = "Willst du mein Valentine sein? 💘";
+    const SUBTITLE = "Du hast exakt zwei Optionen. Eine davon ist richtig.";
+    const YES_TEXT = "Ja 💚";
+
+    const noPhrases = [
+      "Nein 💔",
+      "Bist du sicher?",
+      "Wirklich sicher?",
+      "Denk nochmal nach…",
+      "Letzte Chance.",
+      "Du machst einen Fehler.",
+      "Bitte 😭",
+      "Ich bin gleich traurig…",
+      "Ok das ist jetzt gemein.",
+      "Ich frag nochmal: sicher?",
+      "Dein Ernst?",
+      "Ich wachse jetzt. Deal with it.",
+      "😐",
+      "Ok, jetzt reicht’s.",
+    ];
+
+    const gifs = {
+      start: "https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif",
+      no: [
+        "https://media.tenor.com/1o5qkXJ0lG8AAAAi/bear-cry.gif",
+        "https://media.tenor.com/9q7i0lF6h7AAAAAi/crying-bear.gif",
+        "https://media.tenor.com/3u1qv4mN3n8AAAAi/sad-bear.gif"
+      ],
+      yes: "https://media.tenor.com/8JYt1WZ9n4gAAAAi/love-bear.gif"
+    };
+    // ============================
+
+    const titleEl = document.getElementById("title");
+    const subtitleEl = document.getElementById("subtitle");
+    const gifEl = document.getElementById("gif");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const btnRow = document.getElementById("btnRow");
+    const result = document.getElementById("result");
+
+    titleEl.textContent = QUESTION;
+    subtitleEl.textContent = SUBTITLE;
+    yesBtn.textContent = YES_TEXT;
+
+    let noCount = 0;
+
+    function setYesSize() {
+      // wächst spürbar, aber nicht komplett absurd
+      const base = 1;
+      const scale = base + Math.min(noCount * 0.15, 2.2);
+      yesBtn.style.transform = `scale(${scale})`;
+      yesBtn.style.fontSize = `${18 + Math.min(noCount * 2.2, 26)}px`;
+    }
+
+    function maybeMoveNoButton() {
+      // ab ein paar Klicks fängt "Nein" an zu flüchten (klassischer Reel-Effekt)
+      if (noCount < 4) return;
+
+      const card = document.getElementById("card");
+      const cardRect = card.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      const padding = 18;
+      const maxX = cardRect.width - btnRect.width - padding;
+      const maxY = cardRect.height - btnRect.height - padding;
+
+      const x = padding + Math.random() * Math.max(0, maxX - padding);
+      const y = padding + Math.random() * Math.max(0, maxY - padding);
+
+      // absolut innerhalb der Card positionieren
+      noBtn.style.position = "absolute";
+      noBtn.style.left = `${x}px`;
+      noBtn.style.top  = `${y}px`;
+    }
+
+    noBtn.addEventListener("click", () => {
+      noCount++;
+      noBtn.textContent = noPhrases[Math.min(noCount, noPhrases.length - 1)];
+      setYesSize();
+
+      // GIF wechselt gelegentlich
+      if (noCount % 2 === 0) {
+        const pick = gifs.no[(noCount / 2) % gifs.no.length];
+        gifEl.src = pick;
+      }
+
+      maybeMoveNoButton();
+    });
+
+    yesBtn.addEventListener("click", () => {
+      gifEl.src = gifs.yes;
+      btnRow.classList.add("hidden");
+      result.classList.remove("hidden");
+
+      // Konfetti/Herzen
+      const duration = 900;
+      const end = Date.now() + duration;
+
+      (function frame() {
+        confetti({
+          particleCount: 6,
+          spread: 80,
+          startVelocity: 38,
+          scalar: 1.0,
+          origin: { x: Math.random(), y: 0.15 }
+        });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      })();
+    });
+
+    // Hintergrundherzen generieren
+    const hearts = document.getElementById("hearts");
+    const count = 18;
+    for (let i = 0; i < count; i++) {
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.style.left = `${Math.random() * 100}vw`;
+      h.style.animationDuration = `${10 + Math.random() * 16}s`;
+      h.style.animationDelay = `${-Math.random() * 18}s`;
+      h.style.transform = `rotate(45deg) scale(${0.6 + Math.random() * 1.2})`;
+      hearts.appendChild(h);
+    }
+  </script>
+</body>
+</html>
